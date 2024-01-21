@@ -1,0 +1,40 @@
+services:
+    auth-service:
+      build: infrastructure/auth-service
+      container_name: auth-service
+      image: auth-service
+      working_dir: /var/www/app
+      volumes:
+        - ./auth-service:/var/www/app
+      networks:
+          - main-network
+      ports:
+        - "1112:80"
+    api-gateway:
+      build: infrastructure/api-gateway
+      container_name: api-gateway
+      image: api-gateway
+      working_dir: /var/www/app
+      ports:
+        - "1111:80"
+      volumes:
+        - ./api-gateway:/var/www/app
+      networks:
+          - main-network
+    db-user-postgres:
+      image: postgres:latest
+      container_name: db-user-postgres
+      restart: always
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: user
+      networks:
+          - main-network
+      volumes:
+        - ./database/postgres-data:/var/lib/postgresql/data
+      ports:
+        - "1101:5432"
+networks:
+    main-network:
+        external: true
